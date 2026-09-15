@@ -1,3 +1,137 @@
+"""
+================================================
+       PSEUDOCODIGO - API CATALOGO KAI 3D
+================================================
+
+INICIO
+
+    // --- 1. Preparacion del Sistema ---
+    IMPORTAR FastAPI y HTTPException
+
+    IMPORTAR funcion para crear la tabla de SQLite
+    IMPORTAR clase Producto
+    IMPORTAR funciones CRUD desde logic.py
+
+    CREAR aplicacion FastAPI
+    CREAR tabla productos SI NO EXISTE
+
+    // --- 2. Ruta Principal ---
+    CUANDO usuario acceda a GET "/" ENTONCES:
+        DEVOLVER mensaje de bienvenida
+    FIN
+
+    // --- 3. Crear Producto ---
+    CUANDO usuario envie POST "/items" ENTONCES:
+        RECIBIR:
+            nombre
+            descripcion
+            categoria
+            precio
+
+        CREAR objeto Producto con los datos recibidos
+        ENVIAR producto a crear_producto()
+        GUARDAR producto en SQLite
+        DEVOLVER producto creado como JSON
+    FIN
+
+    // --- 4. Listar Productos ---
+    CUANDO usuario acceda a GET "/items" ENTONCES:
+        OBTENER todos los productos desde SQLite
+        CONVERTIR productos a formato JSON
+        DEVOLVER lista de productos
+    FIN
+
+    // --- 5. Buscar Producto por ID ---
+    CUANDO usuario acceda a GET "/items/{id}" ENTONCES:
+        BUSCAR producto por ID
+
+        SI producto NO EXISTE ENTONCES:
+            DEVOLVER error HTTP 404
+            MOSTRAR "Producto no encontrado"
+        
+        SINO: 
+            DEVOLVER producto como JSON 
+        FIN SI
+    FIN
+
+    // --- 6. Actualizar Producto ---
+    CUANDO usuario envie PUT "/items/{id}" ENTONCES:
+        RECIBIR:
+            nombre
+            descripcion
+            categoria
+            precio
+
+        CREAR objeto Producto con los nuevos datos
+        BUSCAR producto por ID y ACTUALIZAR sus datos
+        
+        SI producto NO EXISTE ENTONCES:
+            DEVOLVER error HTTP 404
+            MOSTRAR "Producto no encontrado"
+        
+        SINO:
+            GUARDAR cambios en SQLite
+            DEVOLVER producto actualizado
+        FIN SI
+    FIN
+
+    // --- 7. Eliminar Producto ---
+    CUANDO usuario envie DELETE "/items/{id}" ENTONCES:
+        BUSCAR producto por ID
+        
+        SI producto NO EXISTE ENTONCES:
+            DEVOLVER error HTTP 404
+            MOSTRAR "Producto no encontrado"
+        
+        SINO:
+            ELIMINAR producto de SQLite 
+            DEVOLVER mensaje "Producto eliminado correctamente"
+        FIN SI
+    FIN
+
+    // --- 8. Persistencia ---
+    GUARDAR todos los cambios inmediatamente en SQLite
+
+    AL reiniciar el servidor:
+        CONSERVAR los productos guardados anteriormente
+FIN
+
+"""
+
+# =============================================================
+# HOW TO RUN THIS API FROM THE VS CODE POWERSHELL TERMINAL
+# =============================================================
+# 1. Move to the project folder:
+# cd "C:\Users\Angelica Rodriguez\Documents\CEI\CPY Python\Python\PEC_4"
+
+# 2. Activate this project's virtual environment:
+# .\venv\Scripts\Activate.ps1
+
+# 3. Start the FastAPI server:
+# python -m uvicorn main:app --reload
+
+# 4. Open the interactive API documentation:
+# http://127.0.0.1:8000/docs
+
+
+# =============================================================
+# GIT COMMANDS USED FOR THIS PROJECT
+# =============================================================
+# Check repository status:
+# git status
+
+# View commit history:
+# git log --oneline
+
+# Add all modified files:
+# git add .
+
+# Create a new commit:
+# git commit -m "Descripcion del cambio"
+
+# Push changes to GitHub:
+# git push
+
 from fastapi import FastAPI, HTTPException
 
 from app.database import crear_tabla
@@ -28,12 +162,12 @@ def inicio():
 #----------------------
 @app.post("/items")
 def nuevo_producto(nombre: str,
-                   description: str, 
+                   descripcion: str, 
                    categoria: str, 
                    precio: float):
     """Create a new product in the catalog"""
 # Create a Product object using the data received from the API
-    producto = Producto(nombre, description, categoria, precio)
+    producto = Producto(nombre, descripcion, categoria, precio)
 # Send the object to logic.py to save it in SQLite
     producto_creado = crear_producto(producto)
 # Convert the object to a dictionary to return it as JSON
